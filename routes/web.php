@@ -25,9 +25,3 @@ Route::get('/test-config', function () {
     ];
 });
 
-// Route protégée (test)
-/*
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth')->name('dashboard');
-*/

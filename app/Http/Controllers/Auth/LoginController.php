@@ -26,11 +26,9 @@ class LoginController extends Controller
 
             $keycloakUser = Socialite::driver('keycloak')->user();
             
-            // Chercher l'utilisateur par email
             $user = User::where('email', $keycloakUser->getEmail())->first();
             
             if (!$user) {
-                // Créer l'utilisateur s'il n'existe pas
                 $user = User::create([
                     'name' => $keycloakUser->getName() ?? $keycloakUser->getEmail(),
                     'email' => $keycloakUser->getEmail(),
@@ -38,7 +36,6 @@ class LoginController extends Controller
                 ]);
             }
             
-            // Connecter l'utilisateur dans Laravel
             Auth::login($user, true);
             
             return redirect()->intended('/dashboard')->with('success', 'Connexion réussie !');
@@ -53,7 +50,6 @@ class LoginController extends Controller
     {
         Auth::logout();
         
-        // Déconnexion de Keycloak
         $logoutUrl = 'http://localhost:8080/realms/AlgerieTelecom/protocol/openid-connect/logout?redirect_uri=' . urlencode('http://localhost:8000');
         
         return redirect($logoutUrl);
