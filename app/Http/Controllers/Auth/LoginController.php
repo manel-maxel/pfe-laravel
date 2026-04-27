@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -17,40 +15,102 @@ class LoginController extends Controller
         return Socialite::driver('keycloak')->redirect();
     }
 
-    public function handleKeycloakCallback(Request $request)
+    public function handleKeycloakCallback()
     {
         try {
-            if ($request->has('error')) {
-                return redirect('/')->with('error', 'Connexion annulée');
+            $keycloakUser = Socialite::driver('keycloak')->user();
+
+            $idToken = $keycloakUser->accessTokenResponseBody['id_token'] ?? null;
+            session(['id_token_hint' => $idToken]);
+
+            $accessToken = $keycloakUser->accessTokenResponseBody['access_token'] ?? null;
+
+            // decode JWT
+            $payload = [];
+            if ($accessToken) {
+                $parts = explode('.', $accessToken);
+                if (count($parts) === 3) {
+                    $payload = json_decode(base64_decode($parts[1]), true) ?? [];
+                }
             }
 
-            $keycloakUser = Socialite::driver('keycloak')->user();
+            // CLIENT ID de CETTE application
+            $currentClientId = env('KEYCLOAK_CLIENT_ID');
             
-            $user = User::where('email', $keycloakUser->getEmail())->first();
+            // NE prendre que les rôles de CE client
+            $clientRoles = $payload['resource_access'][$currentClientId]['roles'] ?? [];
             
-            if (!$user) {
-                $user = User::create([
-                    'name' => $keycloakUser->getName() ?? $keycloakUser->getEmail(),
-                    'email' => $keycloakUser->getEmail(),
-                    'password' => bcrypt(Str::random(24)),
-                ]);
+            // Déterminer le rôle
+            $userRole = 'null';
+            if (in_array('admin', $clientRoles)) {
+                $userRole = 'admin';
+            } elseif (in_array('manager', $clientRoles)) {
+                $userRole = 'manager';
+            } elseif (in_array('employee', $clientRoles)) {
+                $userRole = 'employee';
             }
+
+            // Récupération des infos utilisateur
+            $username = $keycloakUser->user['preferred_username'] ?? 
+                       $keycloakUser->user['username'] ?? 
+                       explode('@', $keycloakUser->user['email'])[0];
             
-            Auth::login($user, true);
-            
-            return redirect()->intended('/dashboard')->with('success', 'Connexion réussie !');
-            
+            $firstName = $keycloakUser->user['firstName'] ?? null;
+            $lastName  = $keycloakUser->user['lastName'] ?? null;
+
+            if (empty($firstName) || empty($lastName)) {
+                $nameParts = explode(' ', $keycloakUser->user['name'] ?? '');
+                $firstName = $firstName ?? ($nameParts[0] ?? 'User');
+                $lastName  = $lastName ?? ($nameParts[1] ?? '');
+            }
+
+            $user = User::updateOrCreate(
+                ['email' => $keycloakUser->user['email']],
+                [
+                    'username'    => $username,
+                    'first_name'  => $firstName,
+                    'last_name'   => $lastName,
+                    'keycloak_id' => $keycloakUser->user['sub'],
+                    'role'        => $userRole,
+                    'password'    => bcrypt(Str::random(24)),
+                ]
+            );
+
+            Auth::login($user);
+
+            if ($userRole === 'admin') {
+                return redirect('/admin/dashboard');
+            } elseif ($userRole === 'manager') {
+                return redirect('/manager/dashboard');
+            } elseif ($userRole === 'employee') {
+                return redirect('/employee/dashboard');
+            }else{
+                Auth::logout();
+                return redirect('/login')->with('error', 'Aucun rôle valide trouvé pour cet utilisateur.');
+            }
+
         } catch (\Exception $e) {
-            Log::error('Keycloak callback error: ' . $e->getMessage());
-            return redirect('/')->with('error', 'Erreur de connexion : ' . $e->getMessage());
+            return redirect('/login')
+                ->with('error', 'Erreur d\'authentification: ' . $e->getMessage());
         }
     }
 
     public function logout()
     {
+        $idToken = session('id_token_hint');
         Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
+
+        $keycloakLogoutUrl = env('KEYCLOAK_BASE_URL') 
+            . '/realms/' . env('KEYCLOAK_REALM') 
+            . '/protocol/openid-connect/logout';
+
+        $logoutUrl = $keycloakLogoutUrl . '?post_logout_redirect_uri=' . urlencode(url('/login'));
         
-        $logoutUrl = 'http://localhost:8080/realms/AlgerieTelecom/protocol/openid-connect/logout?redirect_uri=' . urlencode('http://localhost:8000');
+        if ($idToken) {
+            $logoutUrl .= '&id_token_hint=' . $idToken;
+        }
         
         return redirect($logoutUrl);
     }

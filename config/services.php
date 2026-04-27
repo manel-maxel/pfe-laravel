@@ -37,10 +37,10 @@ return [
 
 
     'keycloak' => [
-        'base_url' => env('KEYCLOAK_BASE_URL'),
-        'realms' => env('KEYCLOAK_REALM'),
-        'client_id' => env('KEYCLOAK_CLIENT_ID'),
+        'client_id' => 'laravel-app',
         'client_secret' => env('KEYCLOAK_CLIENT_SECRET'),
-        'redirect' => env('KEYCLOAK_REDIRECT_URI'),
+        'redirect' => 'http://localhost:8000/auth/callback',
+        'base_url' => 'http://localhost:8080',
+        'realm' => 'AlgerieTelecom', 
     ],
 ];
