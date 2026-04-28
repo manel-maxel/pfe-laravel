@@ -15,7 +15,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->date('report_date')->nullable();  // ← WITHOUT after()
             $table->string('status')->default('pending');
-            $table->text('admin_comment')->nullable();  // ← AJOUTE cette colonne
             $table->timestamp('approved_at')->nullable();
             $table->timestamps();
         });

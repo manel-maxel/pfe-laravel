@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Cache;
 class KeycloakService
 {
     private string $baseUrl;
-    private string $realm;
+    private string $realms;
     private string $adminClientId;
     private string $adminClientSecret;
     private string $appClientId;
@@ -16,7 +16,7 @@ class KeycloakService
     public function __construct()
     {
         $this->baseUrl           = env('KEYCLOAK_BASE_URL', 'http://localhost:8080');
-        $this->realm             = env('KEYCLOAK_REALM', 'AlgerieTelecom');
+        $this->realms             = env('KEYCLOAK_realms', 'AlgerieTelecom');
         $this->adminClientId     = env('KEYCLOAK_ADMIN_CLIENT_ID', 'laravel-admin-cli');
         $this->adminClientSecret = env('KEYCLOAK_ADMIN_CLIENT_SECRET');
         $this->appClientId       = env('KEYCLOAK_CLIENT_ID', 'laravel-app');
@@ -26,7 +26,7 @@ class KeycloakService
     {
         return Cache::remember('keycloak_admin_token', 50, function () {
             $response = Http::asForm()->post(
-                "{$this->baseUrl}/realms/{$this->realm}/protocol/openid-connect/token",
+                "{$this->baseUrl}/realms/{$this->realms}/protocol/openid-connect/token",
                 [
                     'grant_type'    => 'client_credentials',
                     'client_id'     => $this->adminClientId,
@@ -50,7 +50,7 @@ class KeycloakService
             $token = $this->getAdminToken();
 
             $clients = Http::withToken($token)
-                ->get("{$this->baseUrl}/admin/realms/{$this->realm}/clients", [
+                ->get("{$this->baseUrl}/admin/realms/{$this->realms}/clients", [
                     'clientId' => $this->appClientId
                 ])->json();
 
@@ -68,12 +68,12 @@ class KeycloakService
         $clientUuid = $this->getAppClientUuid();
 
         $users = Http::withToken($token)
-            ->get("{$this->baseUrl}/admin/realms/{$this->realm}/users")
+            ->get("{$this->baseUrl}/admin/realms/{$this->realms}/users")
             ->json();
 
         foreach ($users as &$user) {
             $roles = Http::withToken($token)
-                ->get("{$this->baseUrl}/admin/realms/{$this->realm}/users/{$user['id']}/role-mappings/clients/{$clientUuid}")
+                ->get("{$this->baseUrl}/admin/realms/{$this->realms}/users/{$user['id']}/role-mappings/clients/{$clientUuid}")
                 ->json();
 
             $user['roles'] = array_values(array_filter(
@@ -92,7 +92,7 @@ class KeycloakService
         $token = $this->getAdminToken();
 
         $response = Http::withToken($token)
-            ->post("{$this->baseUrl}/admin/realms/{$this->realm}/users", [
+            ->post("{$this->baseUrl}/admin/realms/{$this->realms}/users", [
                 'username'    => $data['username'],
                 'email'       => $data['email'],
                 'firstName'   => $data['firstName'] ?? '',
@@ -121,7 +121,7 @@ class KeycloakService
         $token = $this->getAdminToken();
 
         $response = Http::withToken($token)
-            ->delete("{$this->baseUrl}/admin/realms/{$this->realm}/users/{$userId}");
+            ->delete("{$this->baseUrl}/admin/realms/{$this->realms}/users/{$userId}");
 
         if ($response->failed()) {
             throw new \Exception('Erreur suppression Keycloak : ' . $response->body());
@@ -134,7 +134,7 @@ class KeycloakService
         $clientUuid = $this->getAppClientUuid();
 
         $roleResponse = Http::withToken($token)
-            ->get("{$this->baseUrl}/admin/realms/{$this->realm}/clients/{$clientUuid}/roles/{$roleName}");
+            ->get("{$this->baseUrl}/admin/realms/{$this->realms}/clients/{$clientUuid}/roles/{$roleName}");
 
         if ($roleResponse->failed()) {
             throw new \Exception("Rôle '{$roleName}' introuvable.");
@@ -144,7 +144,7 @@ class KeycloakService
 
         Http::withToken($token)
             ->post(
-                "{$this->baseUrl}/admin/realms/{$this->realm}/users/{$userId}/role-mappings/clients/{$clientUuid}",
+                "{$this->baseUrl}/admin/realms/{$this->realms}/users/{$userId}/role-mappings/clients/{$clientUuid}",
                 [['id' => $role['id'], 'name' => $role['name']]]
             );
     }
@@ -155,7 +155,7 @@ class KeycloakService
         $clientUuid = $this->getAppClientUuid();
 
         $currentRoles = Http::withToken($token)
-            ->get("{$this->baseUrl}/admin/realms/{$this->realm}/users/{$userId}/role-mappings/clients/{$clientUuid}")
+            ->get("{$this->baseUrl}/admin/realms/{$this->realms}/users/{$userId}/role-mappings/clients/{$clientUuid}")
             ->json() ?? [];
 
         $rolesToRemove = array_values(array_filter(
@@ -165,7 +165,7 @@ class KeycloakService
 
         if (!empty($rolesToRemove)) {
             Http::withToken($token)->delete(
-                "{$this->baseUrl}/admin/realms/{$this->realm}/users/{$userId}/role-mappings/clients/{$clientUuid}",
+                "{$this->baseUrl}/admin/realms/{$this->realms}/users/{$userId}/role-mappings/clients/{$clientUuid}",
                 $rolesToRemove
             );
         }
@@ -193,7 +193,7 @@ class KeycloakService
         }
 
         $response = Http::withToken($token)
-            ->put("{$this->baseUrl}/admin/realms/{$this->realm}/users/{$userId}", $userData);
+            ->put("{$this->baseUrl}/admin/realms/{$this->realms}/users/{$userId}", $userData);
 
         if ($response->failed()) {
             throw new \Exception('Erreur mise à jour Keycloak : ' . $response->body());

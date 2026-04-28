@@ -7,7 +7,7 @@ use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\Auth\LoginController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 // Auth routes
@@ -40,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/manager/reports', [ManagerController::class, 'reports'])->name('manager.reports');
         Route::post('/manager/reports/{id}/validate', [ManagerController::class, 'validateReport'])->name('manager.reports.validate');
         Route::post('/manager/reports/{id}/reject', [ManagerController::class, 'rejectReport'])->name('manager.reports.reject');
+        Route::delete('/manager/tasks/{task}', [ManagerController::class, 'destroy'])->name('manager.task.destroy');
         Route::get('/profile', [ManagerController::class, 'profile'])->name('manager.profile');
         Route::get('/edit-profile', [ManagerController::class, 'editProfile'])->name('manager.edit-profile');
         Route::put('/profile/update', [ManagerController::class, 'updateProfile'])->name('manager.profile.update');
@@ -51,7 +52,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
         Route::get('/edit-profile', [EmployeeController::class, 'editProfile'])->name('employee.edit-profile');
         Route::put('/profile/update', [EmployeeController::class, 'updateProfile'])->name('employee.profile.update');
-        // Routes pour les rapports (uniquement ce qui est utilisé dans tes vues)
+
         Route::get('/reports/create', [EmployeeController::class, 'createReport'])->name('employee.reports.create');
         Route::post('/reports/store', [EmployeeController::class, 'storeReport'])->name('employee.reports.store');
     });

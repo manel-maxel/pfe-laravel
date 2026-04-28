@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ManagerController extends Controller
 {
-     private KeycloakService $keycloak;
+    private KeycloakService $keycloak;
 
     public function __construct(KeycloakService $keycloak)
     {
@@ -21,7 +21,7 @@ class ManagerController extends Controller
     {
         $allUsers = $this->keycloak->getUsersWithRoles();
         $employees = collect($allUsers)->where('role', 'employee')->values();
-        
+
         $pendingReports = Task::where('status', 'pending')->count();
         $approvedReports = Task::where('status', 'approved')->count();
         $activeTasks = Task::where('status', 'pending')->count();
@@ -38,7 +38,7 @@ class ManagerController extends Controller
     {
         return view('manager.profile');
     }
-public function editProfile()
+    public function editProfile()
     {
         return view('manager.edit-profile');
     }
@@ -66,10 +66,10 @@ public function editProfile()
     public function reports()
     {
         $tasks = Task::with('user')->orderBy('created_at', 'desc')->get();
-        
+
         $pendingReports = Task::where('status', 'pending')->count();
         $approvedReports = Task::where('status', 'approved')->count();
-        
+
         return view('manager.reports', compact('tasks', 'pendingReports', 'approvedReports'));
     }
 
@@ -90,5 +90,11 @@ public function editProfile()
         $task->update(['status' => 'rejected']);
 
         return back()->with('success', 'Report rejected');
+    }
+    public function destroy(Task $task)
+    {
+        $task->delete();
+
+        return redirect()->route('manager.reports')->with('success', 'Report deleted successfully.');
     }
 }

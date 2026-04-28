@@ -41,6 +41,6 @@ return [
         'client_secret' => env('KEYCLOAK_CLIENT_SECRET'),
         'redirect' => 'http://localhost:8000/auth/callback',
         'base_url' => 'http://localhost:8080',
-        'realm' => 'AlgerieTelecom', 
+        'realms' => 'AlgerieTelecom', 
     ],
 ];

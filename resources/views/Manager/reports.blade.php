@@ -77,17 +77,17 @@
 
                 <!-- Messages -->
                 @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
+                <div class="alert alert-success alert-dismissible fade show">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
                 @endif
 
                 <!-- 🔹 Tasks Table -->
@@ -102,6 +102,7 @@
                                 <th>Description</th>
                                 <th>Status</th>
                                 <th>Action</th>
+                                <th>Delete</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -112,35 +113,48 @@
                                 <td>{{ $task->description }}</td>
                                 <td>
                                     @if($task->status == 'pending')
-                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    <span class="badge bg-warning text-dark">Pending</span>
                                     @elseif($task->status == 'approved')
-                                        <span class="badge bg-success">Approved</span>
+                                    <span class="badge bg-success">Approved</span>
                                     @elseif($task->status == 'rejected')
-                                        <span class="badge bg-danger">Rejected</span>
+                                    <span class="badge bg-danger">Rejected</span>
                                     @else
-                                        <span class="badge bg-secondary">{{ $task->status }}</span>
+                                    <span class="badge bg-secondary">{{ $task->status }}</span>
                                     @endif
                                 </td>
+                                
                                 <td>
                                     @if($task->status == 'pending')
-                                        <form method="POST" action="{{ route('manager.reports.validate', $task->id) }}" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-success">
-                                                <i class="fa fa-check"></i> Validate
-                                            </button>
-                                        </form>
-                                        
-                                        <form method="POST" action="{{ route('manager.reports.reject', $task->id) }}" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                <i class="fa fa-times"></i> Reject
-                                            </button>
-                                        </form>
+                                    <form method="POST" action="{{ route('manager.reports.validate', $task->id) }}" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="fa fa-check"></i> Validate
+                                        </button>
+                                    </form>
+
+                                    <form method="POST" action="{{ route('manager.reports.reject', $task->id) }}" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fa fa-times"></i> Reject
+                                        </button>
+                                    </form>
                                     @else
-                                        <span class="text-success">
-                                            <i class="fa fa-check-circle"></i> Already {{ $task->status }}
-                                        </span>
+                                    <span class="text-success">
+                                        <i class="fa fa-check-circle"></i> Already {{ $task->status }}
+                                    </span>
                                     @endif
+                                </td>
+
+                                <td>
+                                    <form method="POST" action="{{ route('manager.task.destroy', $task) }}" 
+                                          onsubmit="return confirm('Are you sure you want to delete this report?');" 
+                                          style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fa fa-trash"></i> Delete
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                             @endforeach
