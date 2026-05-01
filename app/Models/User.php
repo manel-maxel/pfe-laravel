@@ -41,7 +41,7 @@ class User extends Authenticatable
         parent::boot();
 
         static::saving(function ($user) {
-            // optional normalization (safe)
+            
             $user->first_name = ucfirst($user->first_name);
             $user->last_name  = ucfirst($user->last_name);
         });

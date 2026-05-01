@@ -81,7 +81,7 @@ class KeycloakService
                 fn($name) => in_array($name, ['admin', 'manager', 'employee'])
             ));
 
-            $user['role'] = $user['roles'][0] ?? 'N/A';
+            $user['role'] = $user['roles'][0] ?? 'empty';
         }
 
         return $users;
