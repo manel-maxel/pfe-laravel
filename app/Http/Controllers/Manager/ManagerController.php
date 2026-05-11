@@ -58,7 +58,7 @@ class ManagerController extends Controller
             $user->email      = $request->email;
             $user->save();
 
-            return redirect()->route('employee.profile')->with('success', 'Profile updated successfully');
+            return redirect()->route('manager.profile')->with('success', 'Profile updated successfully');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -84,13 +84,7 @@ class ManagerController extends Controller
         return back()->with('success', 'Report approved successfully');
     }
 
-    public function rejectReport($id)
-    {
-        $task = Task::findOrFail($id);
-        $task->update(['status' => 'rejected']);
-
-        return back()->with('success', 'Report rejected');
-    }
+    
     public function destroy(Task $task)
     {
         $task->delete();

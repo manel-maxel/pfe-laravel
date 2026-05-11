@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Edit Profile - manager</title>
+    <title>Edit Profile - MANAGER</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -45,11 +45,11 @@
 
             <!-- Sidebar -->
             <div class="col-md-2 sidebar p-3">
-                <h4>manager</h4>
+                <h4>MANAGER</h4>
                 <hr>
                 <a href="{{ route('manager.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
-                <a href="{{ route('manager.profile') }}"><i class="fa fa-id-card"></i> My Profile</a>
                 <a href="{{ route('manager.reports') }}"><i class="fa fa-chart-line"></i> Reports</a>
+                <a href="{{ route('manager.profile') }}"><i class="fa fa-id-card"></i> My Profile</a>
                 <a href="{{ route('manager.edit-profile') }}"><i class="fa fa-edit"></i> Edit Profile</a>
             </div>
 

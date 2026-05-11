@@ -52,8 +52,8 @@
                 <hr>
 
                 <a href="{{ route('manager.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
-                <a href="{{ route('manager.profile') }}"><i class="fa fa-id-card"></i> My Profile</a>
                 <a href="{{ route('manager.reports') }}"><i class="fa fa-chart-line"></i> Reports</a>
+                <a href="{{ route('manager.profile') }}"><i class="fa fa-id-card"></i> My Profile</a>
                 <a href="{{ route('manager.edit-profile') }}"><i class="fa fa-edit"></i> Edit Profile</a>
             </div>
 
@@ -90,9 +90,9 @@
                 </div>
                 @endif
 
-                <!-- 🔹 Tasks Table -->
+                <!-- 🔹 Reports Table -->
                 <div class="card shadow p-3">
-                    <h5>Received Tasks</h5>
+                    <h5>Received Reports</h5>
 
                     <table class="table table-striped mt-3 align-middle">
                         <thead>
@@ -132,12 +132,7 @@
                                         </button>
                                     </form>
 
-                                    <form method="POST" action="{{ route('manager.reports.reject', $task->id) }}" style="display:inline;">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-danger">
-                                            <i class="fa fa-times"></i> Reject
-                                        </button>
-                                    </form>
+                                   
                                     @else
                                     <span class="text-success">
                                         <i class="fa fa-check-circle"></i> Already {{ $task->status }}

@@ -48,8 +48,8 @@
                 <h4>EMPLOYEE</h4>
                 <hr>
                 <a href="{{ route('employee.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
-                <a href="{{ route('employee.profile') }}"><i class="fa fa-id-card"></i> My Profile</a>
                 <a href="{{ route('employee.reports.create') }}"><i class="fa fa-plus"></i> Submit Report</a>
+                <a href="{{ route('employee.profile') }}"><i class="fa fa-id-card"></i> My Profile</a>
                 <a href="{{ route('employee.edit-profile') }}"><i class="fa fa-edit"></i> Edit Profile</a>
             </div>
 

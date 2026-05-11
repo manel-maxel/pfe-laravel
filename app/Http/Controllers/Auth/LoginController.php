@@ -37,10 +37,10 @@ class LoginController extends Controller
             // CLIENT ID de CETTE application
             $currentClientId = env('KEYCLOAK_CLIENT_ID');
             
-            // NE prendre que les rôles de CE client
+            // prendre que les rôles de client
             $clientRoles = $payload['resource_access'][$currentClientId]['roles'] ?? [];
             
-            // Déterminer le rôle
+            //le rôle
             $userRole = 'null';
             if (in_array('admin', $clientRoles)) {
                 $userRole = 'admin';

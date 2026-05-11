@@ -53,8 +53,8 @@
                 <hr>
 
                 <a href="{{ route('manager.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
-                <a href="{{ route('manager.profile') }}"><i class="fa fa-id-card"></i> My Profile</a>
                 <a href="{{ route('manager.reports') }}"><i class="fa fa-chart-line"></i> Reports</a>
+                <a href="{{ route('manager.profile') }}"><i class="fa fa-id-card"></i> My Profile</a>
                 <a href="{{ route('manager.edit-profile') }}"><i class="fa fa-edit"></i> Edit Profile</a>
             </div>
 
@@ -92,7 +92,7 @@
                         <div class="card shadow p-3 text-center">
                             <i class="fa fa-tasks fa-2x text-success"></i>
                             <h4 class="mt-2">{{ $activeTasks ?? 0 }}</h4>
-                            <p>Active Tasks</p>
+                            <p>Active Reports</p>
                         </div>
                     </div>
 

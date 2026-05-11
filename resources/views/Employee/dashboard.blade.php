@@ -61,8 +61,8 @@
                 <h4>EMPLOYEE</h4>
                 <hr>
                 <a href="{{ route('employee.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
-                <a href="{{ route('employee.profile') }}"><i class="fa fa-id-card"></i> My Profile</a>
                 <a href="{{ route('employee.reports.create') }}"><i class="fa fa-plus"></i> Submit Report</a>
+                <a href="{{ route('employee.profile') }}"><i class="fa fa-id-card"></i> My Profile</a>
                 <a href="{{ route('employee.edit-profile') }}"><i class="fa fa-edit"></i> Edit Profile</a>
             </div>
 
@@ -95,28 +95,28 @@
                         <div class="card shadow p-3 text-center">
                             <i class="fa fa-check-circle fa-2x text-success"></i>
                             <h4 class="mt-2">{{ $completedTasks ?? 0 }}</h4>
-                            <p>Completed Tasks</p>
+                            <p>Completed Reports</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card shadow p-3 text-center">
                             <i class="fa fa-clock fa-2x text-warning"></i>
                             <h4 class="mt-2">{{ $pendingTasks ?? 0 }}</h4>
-                            <p>Pending Tasks</p>
+                            <p>Pending Reports</p>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card shadow p-3 text-center">
                             <i class="fa fa-tasks fa-2x text-primary"></i>
                             <h4 class="mt-2">{{ $totalTasks ?? 0 }}</h4>
-                            <p>Total Tasks</p>
+                            <p>Total Reports</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Recent Tasks Table -->
+                <!-- Recent Reports Table -->
                 <div class="card shadow mt-4 p-3">
-                    <h5>Recent Tasks</h5>
+                    <h5>Recent Reports</h5>
                     <table class="table table-striped mt-3">
                         <thead>
                             <tr>
